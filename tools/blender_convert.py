@@ -1,5 +1,5 @@
 # Запуск:
-#   Blender -b -P blender_convert.py -- <вход.stl|obj> <выход.glb> [--faces 200000] [--height 0.5] [--color 0.8,0.78,0.74]
+#   Blender -b -P blender_convert.py -- <вход.stl|obj> <выход.glb> [--faces 100000] [--height 0.5] [--color 0.8,0.78,0.74]
 # Импортирует скульпт, упрощает (Decimate), ставит на пол по центру,
 # при необходимости масштабирует до реальной высоты в метрах и экспортирует GLB.
 import bpy
@@ -12,11 +12,12 @@ argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 p = argparse.ArgumentParser()
 p.add_argument("src")
 p.add_argument("dst")
-p.add_argument("--faces", type=int, default=200000, help="целевое число треугольников")
+p.add_argument("--faces", type=int, default=100000, help="целевое число треугольников")
 p.add_argument("--height", type=float, default=0.0, help="высота модели в метрах (0 = оставить как есть)")
 p.add_argument("--color", default="0.80,0.78,0.74", help="базовый цвет R,G,B (0..1)")
 p.add_argument("--roughness", type=float, default=0.55)
 p.add_argument("--metallic", type=float, default=0.0)
+p.add_argument("--draco", action="store_true", help="Draco-сжатие (меньше файл, но хуже совместимость с Android)")
 a = p.parse_args(argv)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -98,7 +99,7 @@ bpy.ops.export_scene.gltf(
     use_selection=False,
     export_normals=True,
     export_texcoords=False,
-    export_draco_mesh_compression_enable=True,
+    export_draco_mesh_compression_enable=a.draco,
     export_draco_mesh_compression_level=6,
     export_draco_position_quantization=14,
     export_draco_normal_quantization=10,

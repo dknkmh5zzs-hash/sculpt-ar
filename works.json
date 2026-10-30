@@ -1,3 +1,9 @@
 [
-  {"slug": "horse", "title": "Лошадь", "meta": "Скульптура, 2025", "desc": "", "height": 0.4}
+  {
+    "slug": "horse",
+    "title": "Лошадь",
+    "meta": "Скульптура, 2025",
+    "desc": "",
+    "height": 0.4
+  }
 ]

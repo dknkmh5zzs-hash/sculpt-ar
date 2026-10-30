@@ -2,7 +2,7 @@
 """Sculpt Art AR: добавление работ и сборка сайта.
 
   ./sculpt add <файл.stl|obj> <slug> --title "Лошадь" [--meta "Бронза, 2025"] [--desc "..."]
-               [--height 0.4] [--faces 200000] [--color 0.8,0.78,0.74] [--usdz model.usdz]
+               [--height 0.4] [--faces 100000] [--color 0.8,0.78,0.74] [--usdz model.usdz]
   ./sculpt build      пересобрать все страницы и QR-коды из works.json
   ./sculpt list       показать работы
   ./sculpt preview    открыть сайт локально в браузере
@@ -157,7 +157,7 @@ def main():
     pa.add_argument("--meta", default="")
     pa.add_argument("--desc", default="")
     pa.add_argument("--height", type=float, default=None, help="реальная высота в метрах (включает AR в натуральную величину)")
-    pa.add_argument("--faces", type=int, default=200000)
+    pa.add_argument("--faces", type=int, default=100000)
     pa.add_argument("--color", default="0.80,0.78,0.74", help="цвет материала R,G,B; бронза: 0.55,0.38,0.22")
     pa.add_argument("--usdz", help="готовый USDZ для iPhone (необязательно)")
     pa.add_argument("--no-convert", action="store_true", help="GLB уже готов, просто скопировать")
