@@ -19,6 +19,7 @@ p.add_argument("--roughness", type=float, default=0.55)
 p.add_argument("--metallic", type=float, default=0.0)
 p.add_argument("--draco", action="store_true", help="Draco-сжатие (меньше файл, но хуже совместимость с Android)")
 p.add_argument("--keep-material", action="store_true", help="оставить исходные материалы и текстуры (сканы)")
+p.add_argument("--max-texture", type=int, default=4096, help="максимальная сторона текстуры: больше телефоны в AR не тянут")
 a = p.parse_args(argv)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -104,6 +105,17 @@ if a.height > 0:
 # Материал
 if a.keep_material:
     print("[sculpt-ar] материалы оставлены исходные:", [m.name for m in obj.data.materials])
+    for img in bpy.data.images:
+        w, h = img.size
+        if max(w, h) > a.max_texture:
+            k = a.max_texture / max(w, h)
+            img.scale(int(w * k), int(h * k))
+            # сохраняем в файл, иначе экспортёр glTF в Blender 3.0 падает на изменённых картинках
+            import tempfile
+            img.filepath_raw = os.path.join(tempfile.mkdtemp(), "tex.jpg")
+            img.file_format = "JPEG"
+            img.save()
+            print(f"[sculpt-ar] текстура {img.name}: {w}x{h} -> {img.size[0]}x{img.size[1]}")
 else:
     mat = bpy.data.materials.new("Sculpture")
     mat.use_nodes = True

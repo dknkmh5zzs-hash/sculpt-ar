@@ -108,6 +108,39 @@ def render_qr(works, cfg):
         print(f"  QR {w['slug']}: {url}")
 
 
+def shrink_usdz(src, dst, max_side=4096):
+    """Копирует USDZ, уменьшая текстуры до max_side (иначе Quick Look может падать).
+    USDZ — zip без сжатия, где данные каждого файла выровнены по 64 байтам."""
+    import struct
+    import tempfile
+    import zipfile
+    tmp = Path(tempfile.mkdtemp())
+    with zipfile.ZipFile(src) as zin:
+        names = zin.namelist()
+        zin.extractall(tmp)
+    for n in names:
+        f = tmp / n
+        if f.suffix.lower() in (".jpg", ".jpeg", ".png"):
+            out = subprocess.run(["sips", "-g", "pixelWidth", "-g", "pixelHeight", str(f)],
+                                 capture_output=True, text=True).stdout.split()
+            w, h = int(out[-3]), int(out[-1])
+            if max(w, h) > max_side:
+                subprocess.run(["sips", "-Z", str(max_side), "-s", "formatOptions", "85", str(f)],
+                               capture_output=True, check=True)
+                print(f"  USDZ: текстура {n} {w}x{h} уменьшена до {max_side}")
+    with open(dst, "wb") as fh, zipfile.ZipFile(fh, "w", zipfile.ZIP_STORED) as zout:
+        for n in names:
+            data = (tmp / n).read_bytes()
+            zi = zipfile.ZipInfo(n, date_time=(2026, 1, 1, 0, 0, 0))
+            pad = (64 - (fh.tell() + 30 + len(n.encode())) % 64) % 64
+            if 0 < pad < 4:
+                pad += 64
+            if pad:
+                zi.extra = struct.pack("<HH", 0x1986, pad - 4) + b"\0" * (pad - 4)
+            zout.writestr(zi, data)
+    shutil.rmtree(tmp, ignore_errors=True)
+
+
 def build():
     cfg = load(CONFIG, {})
     works = load(WORKS, [])
@@ -133,6 +166,7 @@ def add(a):
                "--height", str(a.height or 0), "--color", a.color]
         if a.keep_material or src.suffix.lower() in (".usdz", ".usd", ".usdc", ".glb", ".gltf"):
             cmd.append("--keep-material")
+        (d / "model.glb").unlink(missing_ok=True)
         print("Blender обрабатывает модель, это может занять несколько минут…")
         r = subprocess.run(cmd, capture_output=True, text=True)
         for line in r.stdout.splitlines():
@@ -141,7 +175,7 @@ def add(a):
         if r.returncode or not (d / "model.glb").exists():
             sys.exit("Ошибка Blender:\n" + r.stdout[-2000:] + r.stderr[-2000:])
     if a.usdz:
-        shutil.copy(Path(a.usdz).expanduser(), d / "model.usdz")
+        shrink_usdz(Path(a.usdz).expanduser(), d / "model.usdz")
 
     works = [w for w in load(WORKS, []) if w["slug"] != a.slug]
     works.append({"slug": a.slug, "title": a.title, "meta": a.meta, "desc": a.desc, "height": a.height})
