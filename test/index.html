@@ -1,0 +1,14 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Проверка AR</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script></head>
+<body><main class="home" style="padding-top:32px">
+<h1 style="font-size:36px">Проверка AR</h1><p class="lead">Нажимайте по очереди и запоминайте, где модель появилась.</p>
+<a class="ar-btn" style="text-decoration:none;margin-bottom:12px" href="intent://arvr.google.com/scene-viewer/1.0?file=https%3A%2F%2Fmodelviewer.dev%2Fshared-assets%2Fmodels%2FAstronaut.glb&mode=3d_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Ftest%2F;end;">1. Астронавт Google — 3D</a>
+<a class="ar-btn" style="text-decoration:none;margin-bottom:12px" href="intent://arvr.google.com/scene-viewer/1.0?file=https%3A%2F%2Fmodelviewer.dev%2Fshared-assets%2Fmodels%2FAstronaut.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Ftest%2F;end;">2. Астронавт Google — AR</a>
+<a class="ar-btn" style="text-decoration:none;margin-bottom:12px" href="intent://arvr.google.com/scene-viewer/1.0?file=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Fhorse%2Fmodel.glb&mode=3d_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Ftest%2F;end;">3. Лошадь — 3D</a>
+<a class="ar-btn" style="text-decoration:none;margin-bottom:12px" href="intent://arvr.google.com/scene-viewer/1.0?file=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Fhorse%2Fmodel.glb&mode=ar_only#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Ftest%2F;end;">4. Лошадь — AR</a>
+<a class="ar-btn" style="text-decoration:none;margin-bottom:12px" href="intent://arvr.google.com/scene-viewer/1.0?file=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Fhorse%2Fmodel.glb&mode=ar_only&resizable=true#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https%3A%2F%2Fdknkmh5zzs-hash.github.io%2Fsculpt-ar%2Ftest%2F;end;">5. Лошадь — AR, размер можно менять</a>
+<p class="lead" style="margin:24px 0 8px">6. Лошадь — через браузер (WebXR):</p>
+<model-viewer src="../horse/model.glb" ar ar-modes="webxr" camera-controls style="height:300px" ar-placement="floor"></model-viewer>
+</main></body></html>
