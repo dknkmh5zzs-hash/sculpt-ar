@@ -131,6 +131,8 @@ def add(a):
         cmd = [BLENDER, "-b", "-P", str(TOOLS / "blender_convert.py"), "--",
                str(src), str(d / "model.glb"), "--faces", str(a.faces),
                "--height", str(a.height or 0), "--color", a.color]
+        if a.keep_material or src.suffix.lower() in (".usdz", ".usd", ".usdc", ".glb", ".gltf"):
+            cmd.append("--keep-material")
         print("Blender обрабатывает модель, это может занять несколько минут…")
         r = subprocess.run(cmd, capture_output=True, text=True)
         for line in r.stdout.splitlines():
@@ -160,6 +162,7 @@ def main():
     pa.add_argument("--faces", type=int, default=100000)
     pa.add_argument("--color", default="0.80,0.78,0.74", help="цвет материала R,G,B; бронза: 0.55,0.38,0.22")
     pa.add_argument("--usdz", help="готовый USDZ для iPhone (необязательно)")
+    pa.add_argument("--keep-material", action="store_true", help="оставить текстуры исходника (для USDZ/GLB включено само)")
     pa.add_argument("--no-convert", action="store_true", help="GLB уже готов, просто скопировать")
     sub.add_parser("build")
     sub.add_parser("list")

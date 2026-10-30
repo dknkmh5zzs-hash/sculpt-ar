@@ -18,6 +18,7 @@ p.add_argument("--color", default="0.80,0.78,0.74", help="базовый цве�
 p.add_argument("--roughness", type=float, default=0.55)
 p.add_argument("--metallic", type=float, default=0.0)
 p.add_argument("--draco", action="store_true", help="Draco-сжатие (меньше файл, но хуже совместимость с Android)")
+p.add_argument("--keep-material", action="store_true", help="оставить исходные материалы и текстуры (сканы)")
 a = p.parse_args(argv)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -32,12 +33,31 @@ elif ext in (".glb", ".gltf"):
     bpy.ops.import_scene.gltf(filepath=a.src)
 elif ext == ".ply":
     bpy.ops.import_mesh.ply(filepath=a.src)
+elif ext in (".usd", ".usda", ".usdc"):
+    bpy.ops.wm.usd_import(filepath=a.src, import_usd_preview=True)
+elif ext == ".usdz":
+    # USDZ — это zip; распаковываем рядом с результатом и импортируем .usdc
+    import tempfile, zipfile
+    tmp = tempfile.mkdtemp()
+    with zipfile.ZipFile(a.src) as z:
+        z.extractall(tmp)
+    inner = next(n for n in z.namelist() if n.lower().endswith((".usdc", ".usda", ".usd")))
+    bpy.ops.wm.usd_import(filepath=os.path.join(tmp, inner), import_usd_preview=True)
 else:
     sys.exit(f"Неизвестный формат: {ext}")
 
 meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
 if not meshes:
     sys.exit("В файле нет мешей")
+
+# Отвязываем меши от родителей (USD/glTF кладут их в группы с поворотом), остальное удаляем
+for o in meshes:
+    mw = o.matrix_world.copy()
+    o.parent = None
+    o.matrix_world = mw
+for o in list(bpy.context.scene.objects):
+    if o.type != "MESH":
+        bpy.data.objects.remove(o)
 
 # Объединяем всё в один объект
 bpy.ops.object.select_all(action="DESELECT")
@@ -82,15 +102,18 @@ if a.height > 0:
     print(f"[sculpt-ar] масштаб до высоты {a.height} м")
 
 # Материал
-mat = bpy.data.materials.new("Sculpture")
-mat.use_nodes = True
-bsdf = mat.node_tree.nodes.get("Principled BSDF")
-r, g, b = (float(x) for x in a.color.split(","))
-bsdf.inputs["Base Color"].default_value = (r, g, b, 1)
-bsdf.inputs["Roughness"].default_value = a.roughness
-bsdf.inputs["Metallic"].default_value = a.metallic
-obj.data.materials.clear()
-obj.data.materials.append(mat)
+if a.keep_material:
+    print("[sculpt-ar] материалы оставлены исходные:", [m.name for m in obj.data.materials])
+else:
+    mat = bpy.data.materials.new("Sculpture")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    r, g, b = (float(x) for x in a.color.split(","))
+    bsdf.inputs["Base Color"].default_value = (r, g, b, 1)
+    bsdf.inputs["Roughness"].default_value = a.roughness
+    bsdf.inputs["Metallic"].default_value = a.metallic
+    obj.data.materials.clear()
+    obj.data.materials.append(mat)
 
 os.makedirs(os.path.dirname(os.path.abspath(a.dst)), exist_ok=True)
 bpy.ops.export_scene.gltf(
@@ -98,7 +121,7 @@ bpy.ops.export_scene.gltf(
     export_format="GLB",
     use_selection=False,
     export_normals=True,
-    export_texcoords=False,
+    export_texcoords=a.keep_material,
     export_draco_mesh_compression_enable=a.draco,
     export_draco_mesh_compression_level=6,
     export_draco_position_quantization=14,
