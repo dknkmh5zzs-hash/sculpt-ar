@@ -1,0 +1,98 @@
+:root {
+  --bg: #14120f;
+  --bg-2: #1d1a16;
+  --ink: #f1ece4;
+  --muted: #a49c90;
+  --line: rgba(241, 236, 228, 0.14);
+  --accent: #c9a46a;
+  --accent-ink: #1a150d;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+a { color: inherit; }
+
+/* Шапка */
+.top {
+  position: fixed; inset: 0 0 auto 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: max(16px, env(safe-area-inset-top)) 20px 16px;
+  background: linear-gradient(var(--bg), transparent);
+  pointer-events: none;
+}
+.top > * { pointer-events: auto; }
+.brand {
+  font-family: var(--serif); font-size: 22px; letter-spacing: 0.08em;
+  text-decoration: none; text-transform: uppercase;
+}
+.brand span { color: var(--accent); }
+.top nav a { color: var(--muted); font-size: 13px; text-decoration: none; letter-spacing: 0.04em; }
+.top nav a:hover { color: var(--ink); }
+
+/* Страница работы */
+.work { height: 100svh; display: flex; flex-direction: column; }
+model-viewer {
+  flex: 1; width: 100%; min-height: 0;
+  background: radial-gradient(ellipse at 50% 45%, #2a251f 0%, var(--bg) 70%);
+  --poster-color: transparent;
+  --progress-bar-color: var(--accent);
+}
+.info {
+  padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  display: grid; gap: 14px;
+}
+.info h1 { font-family: var(--serif); font-weight: 500; font-size: 32px; line-height: 1.05; }
+.meta { color: var(--muted); font-size: 13px; letter-spacing: 0.03em; }
+.desc { color: var(--ink); opacity: 0.85; max-width: 60ch; }
+
+.ar-btn {
+  appearance: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px 20px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 16px/1 var(--sans);
+  transition: transform .15s ease, filter .15s ease;
+}
+.ar-btn:active { transform: scale(0.98); }
+.ar-btn svg { width: 20px; height: 20px; }
+.ar-hint { color: var(--muted); font-size: 13px; text-align: center; }
+.links { display: flex; gap: 18px; font-size: 13px; }
+.links a { color: var(--muted); }
+
+@media (min-width: 900px) {
+  .work { flex-direction: row; }
+  .info {
+    width: 380px; flex: none; border-top: 0; border-left: 1px solid var(--line);
+    align-content: end; padding: 40px 32px;
+  }
+  .info h1 { font-size: 44px; }
+}
+
+/* Главная: список работ */
+.home { max-width: 1100px; margin: 0 auto; padding: 96px 20px 48px; }
+.home h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(36px, 7vw, 64px); line-height: 1; margin-bottom: 8px; }
+.home .lead { color: var(--muted); margin-bottom: 40px; }
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.card {
+  display: block; text-decoration: none; border: 1px solid var(--line);
+  border-radius: 14px; overflow: hidden; background: var(--bg-2);
+  transition: border-color .2s ease;
+}
+.card:hover { border-color: var(--accent); }
+.card model-viewer { height: 280px; pointer-events: none; }
+.card .cap { padding: 14px 16px; }
+.card .cap b { font-family: var(--serif); font-size: 22px; font-weight: 500; display: block; }
+.card .cap span { color: var(--muted); font-size: 13px; }

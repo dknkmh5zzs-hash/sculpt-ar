@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14120f">
+  <title>Лошадь — Sculpt Art</title>
+  <meta name="description" content="Лошадь. Скульптура, 2025. Посмотрите скульптуру в дополненной реальности.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="../">Sculpt<span>·</span>Art</a>
+    <nav><a href="https://example.com">sculpt-art.ru</a></nav>
+  </header>
+
+  <main class="work">
+    <model-viewer id="mv" src="model.glb" 
+      alt="Лошадь, 3D-модель скульптуры"
+      ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
+      camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg"
+      interaction-prompt="none" shadow-intensity="1.1" shadow-softness="0.8"
+      exposure="1.05" environment-image="neutral" tone-mapping="aces">
+      <button slot="ar-button" style="display:none"></button>
+    </model-viewer>
+
+    <section class="info">
+      <div>
+        <h1>Лошадь</h1>
+        <p class="meta">Скульптура, 2025</p>
+      </div>
+      
+      <button class="ar-btn" id="ar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="m3 7 9 5 9-5M12 12v10"/></svg>
+        Посмотреть в своей комнате
+      </button>
+      <p class="ar-hint" id="hint" hidden>Откройте эту страницу на телефоне, чтобы поставить скульптуру у себя дома</p>
+      <div class="links"><a href="../">Все работы</a><a href="https://example.com">sculpt-art.ru</a></div>
+    </section>
+  </main>
+
+  <script>
+    const mv = document.getElementById('mv');
+    const btn = document.getElementById('ar');
+    const hint = document.getElementById('hint');
+    btn.addEventListener('click', () => mv.activateAR());
+    mv.addEventListener('load', () => {
+      if (!mv.canActivateAR) { btn.hidden = true; hint.hidden = false; }
+    });
+  </script>
+</body>
+</html>
